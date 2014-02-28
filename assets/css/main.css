@@ -1,0 +1,5 @@
+/* Generic Styles */
+* { margin:0; padding:0; display: relative; }
+body { background: whitesmoke; }
+.mt10 { margin-top: 10px; }
+.input-error { border: 2px solid red !important; }

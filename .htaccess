@@ -1,2 +1,2 @@
 RewriteEngine on
-RewriteRule ^([a-zA-Z0-9]+)$ request_handler.php?code=$1
+RewriteRule ^([a-zA-Z0-9]+)$ actions/redirectHandler.php?code=$1

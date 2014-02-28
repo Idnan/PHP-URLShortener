@@ -4,7 +4,7 @@
 require 'config/config.php';
 
 // Our autoloader for the application
-require 'autoload.php';
+require 'lib/_autoload.php';
 
 // Initiate the application
 $shortener = new Application();
