@@ -2,6 +2,7 @@
 
 /**
 * Database class to handle the database connection and stuff
+* @author Kamran Ahmed <kamranahmed.se@gmail.com>
 */
 class Database
 {
@@ -12,6 +13,9 @@ class Database
 		$this->openConnection();
 	}	
 
+	/**
+	 * Opens the database connection and set's some default attributes
+	 */
 	public function openConnection()
 	{
 		$options = array(PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ, PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING);
