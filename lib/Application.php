@@ -12,8 +12,8 @@ class Application extends Database
 
 		if ( isset($_POST['url']) && !empty($_POST['url']) )  {
 			$this->processUrl( $_POST['url'] );
-		} else if (isset($_GET['shortened_code'])) {
-			$this->handleRedirection( $_GET['shortened_code'] );
+		} else if (isset($_GET['code'])) {
+			$this->handleRedirection( $_GET['code'] );
 		}
 	}
 
@@ -40,13 +40,13 @@ class Application extends Database
 		}
 	}
 
-	public function generate_code()
+	public function generateCode()
 	{
 		$str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 		return substr(str_shuffle($str),0,6);
 	}
 
-	public function is_code_unique( $code )
+	public function isCodeUnique( $code )
 	{
 		$sql = 'SELECT COUNT(url_id) AS url_count FROM urls WHERE code=:code LIMIT 1';
 		
@@ -55,6 +55,19 @@ class Application extends Database
 
 		$result = $query->fetch( PDO::FETCH_ASSOC );
 		return ( $result['url_count'] == 0 ) ? true : false;
+	}
+
+	public function getUrlCode( $url )
+	{
+		$sql = 'SELECT code FROM urls WHERE url=:url';
+		
+		$query = $this->db->prepare( $sql );
+		$query->execute(array(
+			':url' => $url
+		));
+		$result = $query->fetchAll(PDO::FETCH_ASSOC);
+
+		return ( count($result) !== 0 ) ? $result[0]['code'] : false;
 	}
 
 	public function shortenUrl( $url, $code )
@@ -73,21 +86,29 @@ class Application extends Database
 
 		if ( $isValid === true ) {
 
-			while( true )
-			{
-				$code = $this->generate_code();
-				if( $this->is_code_unique($code) )
-				{
-					$result = $this->shortenUrl( $url, $code );
+			$code = $this->getUrlCode( $url );
 
-					if ( $result === 'SHORTENED_SUCCESS' ) {
-						echo 'SHORTENED_SUCCESS@' . URL . $code;
-						break 1;
-					} else {
-						echo $result;
-						break 1;
+			if ( $code === false ) {
+				while( true )
+				{
+					$code = $this->generateCode();
+					if( $this->isCodeUnique($code) )
+					{
+						$result = $this->shortenUrl( $url, $code );
+
+						if ( $result === 'SHORTENED_SUCCESS' ) {
+							echo 'SHORTENED_SUCCESS@' . URL . $code;
+							break 1;
+						} else {
+							echo $result;
+							break 1;
+						}
 					}
 				}
+			} else {
+
+				echo 'SHORTENED_SUCCESS@' . URL . $code;
+				return;
 			}
 
 		} else {
@@ -96,8 +117,25 @@ class Application extends Database
 		}
 	}
 
+	public function getUrl($code)
+	{
+		$sql = "SELECT url FROM urls WHERE code=:code LIMIT 1";
+		$query = $this->db->prepare( $sql );
+		$query->execute(array(
+			':code' => $code
+		));
+		$result = $query->fetchAll(PDO::FETCH_ASSOC);
+		return ( count( $result ) === 1 ) ? $result[0]['url'] : false;
+	}
+
 	public function handleRedirection( $code )
 	{
-		
+		$url = $this->getUrl($code);
+
+		if( $url !== false) {
+			header("Location: " . $url);
+		} else {
+			header("Location: " . URL);
+		}
 	}
 }
