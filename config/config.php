@@ -23,13 +23,5 @@ define('DB_NAME', 'linkoo');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 
-/** Shortening Errors */
-define('ERROR_NO_URL', 'Error! No URL was provided to be shortened!');
-define('ERROR_INVALID_URL', 'Error! Invalid URL entered, please enter a valid URL e.g. http://somelink.com/foo/bar');
-define('ERROR_IS_SHORTENED', 'Error! URL you have provided is already shortened!');
-define('ERROR_UNKNOWN', 'An unknown error occured, and the shortening was unsuccessful, please try again!');
-define('SHORTENED_SUCCESS', 'URL successfuly shortened!');
-
-
 /** Finding this in the URL would mean, the URL is already shortened! */
 define('URL_CHUNK', '127.0.0.1');

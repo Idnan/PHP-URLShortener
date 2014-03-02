@@ -20,14 +20,14 @@ class Application extends Database
 	public function validateUrl( $url )
 	{
 		if(empty($url)) {
-			return ERROR_NO_URL;
+			return 'ERROR_NO_URL';
 		}
 		else if(filter_var($url, FILTER_VALIDATE_URL) === false) {
-			return ERROR_INVALID_URL;
+			return 'ERROR_INVALID_URL';
 		}
 		else if( $this->alreadyShortened( $url ) )
 		{	
-			return ERROR_IS_SHORTENED;
+			return 'ERROR_IS_SHORTENED';
 		} else { 
 			return true;
 		}
@@ -64,7 +64,7 @@ class Application extends Database
 		$query = $this->db->prepare( $sql );
 		$query->execute( array( ':url' => $url, ':code' => $code) );
 
-		return ( $query->rowCount() != 1 ) ? ERROR_UNKNOWN : SHORTENED_SUCCESS;
+		return ( $query->rowCount() != 1 ) ? 'ERROR_UNKNOWN' : 'SHORTENED_SUCCESS';
 	}
 
 	public function processUrl( $url )
@@ -73,15 +73,15 @@ class Application extends Database
 
 		if ( $isValid === true ) {
 
-			while(true)
+			while( true )
 			{
 				$code = $this->generate_code();
 				if( $this->is_code_unique($code) )
 				{
 					$result = $this->shortenUrl( $url, $code );
 
-					if ( $result === true ) {
-						echo URL . $code;
+					if ( $result === 'SHORTENED_SUCCESS' ) {
+						echo 'SHORTENED_SUCCESS@' . URL . $code;
 						break 1;
 					} else {
 						echo $result;
@@ -91,11 +91,8 @@ class Application extends Database
 			}
 
 		} else {
-			
-			$error[] = $isValid;
-
-			$json = json_encode( $error );
-			echo $json;
+			// Echoing out, because there is an ajax request calling this function
+			echo $isValid;
 		}
 	}
 
